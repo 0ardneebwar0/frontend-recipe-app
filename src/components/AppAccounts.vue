@@ -1,32 +1,75 @@
+<style>
+/* Add a border and some padding to the button */
+.btn {
+  border: 1px solid rgb(0, 0, 0);
+  padding: 10px;
+  background-color: rgb(34, 222, 222);
+  margin: 0 10px;
+  
+}
+/* Style the table with a striped pattern and hover effect */
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #7c3c7fb6;
+}
+.table-hover tbody tr:hover {
+  background-color: #c3373777;
+}
+.jumbot {
+  background-image: url(recipe_01.jpg);
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 15vh;
+}
+.edit-btn {
+  background-color: grey;
+}
+.delete-btn {
+  background-color: darkred;
+}
+h1 {
+text-align: center;
+color: rgb(255, 255, 255);
+}
+</style>
+
 <template>
   <div class="jumbotron vertical-center">
       <div class = "container">
           <div class = "row">
               <div class = "col-sm-12">
-                  <h1>Recipes</h1>
+                <div class="jumbot">
+                <h1 style="font-size: 70px;">R E C I P E S</h1>
+                </div>
+
                   <hr />
                   <!-- Allert Message -->
-        <b-alert v-if="showMessage" variant="success" show>{{
+        <!--<b-alert v-if="showMessage" variant="success" show>{{
           message
-        }}</b-alert>
+        }}</b-alert>-->
         <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
-
-        <button
-          type="button"
-          class="btn btn-success btn-sm"
-          v-b-modal.recipe-modal
-        >
-          Create 
-        </button>
-                  <br /> <br />
-                  <table class = "table table-hover">
+   
+                  <table class="table table-striped table-hover" style="background-color:beige;">
+                    <colgroup>
+                      <col style="width: 10%;" />
+                      <col style="width: 30%;" />
+                      <col style="width: 40%;" />
+                      <col style="width: 10%;" />
+                      <col style="width: 10%;" />
+                    </colgroup>
                       <thead>
                           <tr>
-                              <th scope = "col"> Recipe Name </th>
-                              <th scope = "col"> Recipe Ingredients </th>
-                              <th scope = "col"> Recipe Instructions </th>
-                              <th scope = "col"> Recipe Favorite </th>
-                              <th scope = "col"> Recipe Rating </th>
+                              <th scope = "col"> Food </th>
+                              <th scope = "col"> Ingredients </th>
+                              <th scope = "col"> Instructions </th>
+                              <th scope = "col"> Favorite </th>
+                              <th scope = "col"> Rating </th>
                           </tr>
                       </thead>
                       <tbody>
@@ -34,42 +77,65 @@
                               <td> {{ recipe.name }} </td>
                               <td> {{ recipe.ingredients }} </td>
                               <td> {{ recipe.instructions }} </td>
-                              <td>
-                                  <b-icon 
-                                  v-if="recipe.favorite == true" icon="heart-fill">
-                                  </b-icon>
-                                  <b-icon v-if="(recipe.favorite == false)" icon="heart">
-                                  </b-icon>
-                              </td>
-                                <td> 
-                                    <div>
-                                        <b-form-ratings v-model= "recipe.ratings" readonly variant="warning" class="mb-2"></b-form-ratings>
-                                        <p class="mt-2"></p>
-                                    </div> 
+                              <td style="text-align: center;">
+
+                                <template>
+                                  <p>{{ recipe.favorite ? '&#x2764' : '&#x2661' }}</p>
+                                </template>
+                                </td>
+                                <td>
+                                    <template v-if="recipe.ratings === 5">
+                                        &#9733&#9733&#9733&#9733&#9733
+                                    </template>
+                                    <template v-if="recipe.ratings === 4">
+                                        &#9733&#9733&#9733&#9733&#9734
+                                    </template>
+                                    <template v-if="recipe.ratings === 3">
+                                        &#9733&#9733&#9733&#9734&#9734
+                                    </template>
+                                    <template v-if="recipe.ratings === 2">
+                                        &#9733&#9733&#9734&#9734&#9734
+                                    </template>
+                                    <template v-if="recipe.ratings === 1">
+                                        &#9733&#9734&#9734&#9734&#9734
+                                    </template>
+                            
                                  </td>
                               
                                <td> 
-                                  <div class="btn-group" role="group">
-                                      <button
-                                      type="button"
-                                      class="btn btn-info btn-sm"
-                                      v-b-modal.edit-recipe-modal
-                                      @click="editRecipe(recipe)"
-                                      >
-                                      Edit
-                                      </button>
-                                      <button
-                                      type="button"
-                                      class="btn btn-danger btn-sm"
-                                      @click="deleteRecipe(recipe)"
-                                      >
-                                      Delete
-                                      </button>
+                                  <div class="btn-group btn-group-sm" role="group">
+                                    <button
+                                        type="button"
+                                        style = "width: 60px;"
+                                        class="btn btn-warning btn-sm edit-btn"
+                                        v-b-modal.edit-recipe-modal
+                                        @click="editRecipe(recipe)"
+                                        >
+                                        Edit
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            style = "width: 60px;"
+                                            class="btn btn-danger btn-sm delete-btn"
+                                            @click="deleteRecipe(recipe)"
+                                            >
+                                            Delete
+                                            </button>
                                   </div>
                               </td>
                           </tr>
                       </tbody>
                   </table>
+                  <button
+              type="button"
+              class="btn btn-success btn-sm"
+              style="background-color: #50CAFE; float: right;"
+              v-b-modal.recipe-modal
+                    >
+                    Add Recipe
+                </button>
+
                   <footer class = "text-center">
                   </footer>
               
@@ -79,182 +145,198 @@
               <div>   <b-modal 
               ref = "addRecipeModal"
               id="recipe-modal"
-              title="Add Recipe"
+              title="ADD NEW RECIPE"
               hide-backdrop
               hide-footer
               >
               <b-form @submit="onSubmit" class="w-100">
-              <b-form-group
+              <b-form-group style="font-weight:bold; color:royalblue;"
                   id="name"
-              label="Recipe Name:"
+              label="Food Name:"
               label-for="name"
-              description="Name of the recipe."
               >
-              <b-form-input
+              <b-form-input style="background-color: lightgoldenrodyellow"
               id="name"
               type="text"
               v-model="createRecipeForm.name"
-              placeholder="name"
+              placeholder="Food Name"
               required
               >
               </b-form-input>
               </b-form-group>
-              <b-form-group
+              <b-form-group style="font-weight:bold; color:royalblue;"
               id="ingredients"
-              label="Recipe Ingredients:"
+              label="Ingredients:"
               label-for="ingredients"
-              description="Ingredients of the recipe."
               >
-              <b-form-input
+              <b-form-input style="background-color: lightgoldenrodyellow"
               id="ingredients"
               type="text"
               v-model="createRecipeForm.ingredients"
-              placeholder="ingredients"
+              placeholder="Ingredients"
               required
               ></b-form-input>
               </b-form-group>
-              <b-form-group
+              <b-form-group style="font-weight:bold; color:royalblue;"
               id="instructions"
-              label="Recipe Instructions:"
+              label="Instructions:"
               label-for="instructions"
-              description="Instructions of the recipe."
               >
-              <b-form-input
+              <b-form-input style="background-color: lightgoldenrodyellow"
               id="instructions"
               type="text"
               v-model="createRecipeForm.instructions"
-              placeholder="Recipe Instructions"
+              placeholder="Instructions"
               required
               ></b-form-input>
               </b-form-group>
-              <b-form-group
-              id="form-favorite-group"    
-              label="Recipe Favorite:"
+              <b-form-group style="font-weight:bold; color:royalblue;"
+              id="favorite"    
+              label="Favorite:"
               label-for="form-edit-favorite-input"
-              description="favorite this recipe"
               >
-              <b-form-checkbox
-              id="form-favorite-input"
-              v-model="createRecipeForm.favorite"
-              switch
+              <b-form-checkbox style="background-color: lightgoldenrodyellow"
+                id="form-favorite-input"
+                
+                v-model="createRecipeForm.favorite"
+                switch
+
               ></b-form-checkbox>
+              
               </b-form-group>
-              <b-form-group
+              <b-form-group group style="font-weight:bold; color:royalblue;"
               id="ratings"
-              label="Recipe Rating:"
+              label="Rating:"
               label-for="form-ratings-input"
-              description="Rate this recipe from 1-5"
               >
-              <b-form-ratings
-              id="ratings"
+              <b-form-select style="background-color: lightgoldenrodyellow"
+              id="form-ratings-input"
               type="integer"
-              v-model="createRecipeForm.ratings"
-              ></b-form-ratings>
+              v-model="createRecipeForm.ratings"              
+              required
+            >
+              <option value=1>
+                &#9733;&#9734;&#9734;&#9734;&#9734;
+              </option>
+              <option value=2>
+                &#9733;&#9733;&#9734;&#9734;&#9734;
+              </option>
+              <option value=3>
+                &#9733;&#9733;&#9733;&#9734;&#9734;
+              </option>
+              <option value=4>
+                &#9733;&#9733;&#9733;&#9733;&#9734;
+              </option>
+              <option value=5>
+                &#9733;&#9733;&#9733;&#9733;&#9733;
+              </option>
+            </b-form-select>
               </b-form-group>
               <b-button type="submit" variant="primary">Submit</b-button>
               </b-form>
           </b-modal>
-
           <!-- End of Modal for Create Recipe-->
 
           <!-- Beginning of Modal for Edit Recipe-->
           <b-modal
           ref = "editRecipeModal"
           id="edit-recipe-modal"
-          title="Edit Recipe"
+          title="UPDATE THE RECIPE"
           hide-backdrop
           hide-footer
           >
           <b-form @submit="onSubmitUpdate" class="w-100">
           <b-form-group
           id="form-name-group"
-          label="name:"
+          label="Recipe Name:"
           label-for="form-name-input"
-          description="Enter the name of the recipe."
           >
-          <b-form-input
+          <b-form-input style="background-color: lightgoldenrodyellow"
           id="form-name-input"
           type="text"
           v-model="updateRecipeForm.name"
-          placeholder="name"
-          
+          placeholder="Recipe Name"
+          required
           >
           </b-form-input>
           </b-form-group>
           <b-form-group
           id="form-ingredients-group"
-          label="ingredients:"
+          label="Ingredients:"
           label-for="form-ingredients-input"
-          description="Enter the ingredients of the recipe."
           >
-          <b-form-input
+          <b-form-input style="background-color: lightgoldenrodyellow"
           id="form-ingredients-input"
           type="text"
           v-model="updateRecipeForm.ingredients"
-          placeholder="ingredients"
+          placeholder="Ingredients"
           >
           </b-form-input>
           </b-form-group>
-          <b-form-group
+          <b-form-group 
           id="form-instructions-group"
-          label="Recipe Instructions:"
+          label="Instructions:"
           label-for="form-instructions-input"
-          description="Enter the instructions of the recipe."
           >
-          <b-form-input
-
+          <b-form-input style="background-color: lightgoldenrodyellow"
           id="form-instructions-input"
           type="text"
           v-model="updateRecipeForm.instructions"
-          placeholder="Recipe Instructions"
+          placeholder="Instructions"
           >
           </b-form-input>
           </b-form-group>
-
           <b-form-group
-
           id="form-favorite-group"
-          label="Recipe Favorite:"
+          label="Favorite:"
           label-for="form-favorite-input"
-          description="Let us know if you want to favorite this recipe"
           >
-          <b-form-checkbox
-          id="form-favorite-input"
-          v-model="updateRecipeForm.favorite"
-          switch
-          ></b-form-checkbox>
+          <b-form-checkbox style="background-color: lightgoldenrodyellow"
+              id="form-favorite-input"
+             
+              v-model="updateRecipeForm.favorite"
+              switch
+            ></b-form-checkbox>
+            
           </b-form-group>
           <b-form-group
           id="form-ratings-group"
-          label="Recipe Rating:"
+          label="Rating:"
           label-for="form-ratings-input"
-          description="Rate this recipe from 1-5"
           >
-          <b-form-ratings
-          id="form-ratings-input"
-          type="integer"
-          v-model="updateRecipeForm.ratings"
-          ></b-form-ratings>
-          </b-form-group>
-  
+          <b-form-select style="background-color: lightgoldenrodyellow"
+              id="form-ratings-input"
+              type="integer"
+              v-model="updateRecipeForm.ratings"             
+              required
+            >
+              <option value=1>
+                &#9733;&#9734;&#9734;&#9734;&#9734;
+              </option>
+              <option value=2>
+                &#9733;&#9733;&#9734;&#9734;&#9734;
+              </option>
+              <option value=3>
+                &#9733;&#9733;&#9733;&#9734;&#9734;
+              </option>
+              <option value=4>
+                &#9733;&#9733;&#9733;&#9733;&#9734;
+              </option>
+              <option value=5>
+                &#9733;&#9733;&#9733;&#9733;&#9733;
+              </option>
+            </b-form-select>
+          </b-form-group> 
           <b-button type="submit" variant="primary">Update</b-button>
           </b-form>
           </b-modal>
           <!-- End of Modal for Edit Recipe-->
-
       </div>
-      
-  
   </div>
 </div>
- 
-  
-
 </template>
 
-
 <script>
-  
   
   import axios from 'axios';
   export default
@@ -269,15 +351,15 @@
                 ingredients: '',
                 instructions: '',
                 favorite: false,
-                ratings: 0
+                ratings: 1
             },
-  
+
             updateRecipeForm: {
                 name: '',
                 ingredients: '',
                 instructions: '',
                 favorite: false,
-                ratings: 0
+                ratings: 1
             },
   
             showMessage: false,
@@ -286,9 +368,7 @@
         };
     },
     methods: {
-  
-      
-      
+
         //GET Recipes
         RESTgetRecipes() {
         const path = `${process.env.VUE_APP_ROOT_URL}/recipes`;
@@ -309,7 +389,7 @@
                 console.log(error);
             });
         },
-  
+
         //POST Recipes
         RESTcreateRecipe(payload){
             const path = `${process.env.VUE_APP_ROOT_URL}/recipe`;
@@ -351,7 +431,6 @@
                 });
         },
   
-  
         RESTdeleteRecipe(id){
             const path = `${process.env.VUE_APP_ROOT_URL}/recipe/${id}`;
             axios
@@ -377,14 +456,14 @@
                 ingredients: '',
                 instructions: '',
                 favorite: false,
-                ratings: 0
+                ratings: 1
             };
             this.updateRecipeForm = {
                 name: '',
                 ingredients: '',
                 instructions: '',
                 favorite: false,
-                ratings: 0
+                ratings: 1
             };
   
         },
@@ -422,12 +501,8 @@
         editRecipe(recipe) {
             this.updateRecipeForm = recipe;
         },
-  
-        
-  
     },
    
-  
     created() {
         this.RESTgetRecipes();
     },
@@ -438,7 +513,6 @@
 .vertical-center {
   min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
   min-height: 100vh; /* These two lines are counted as one :-)       */
-
   display: flex;
   align-items: center;
 }
