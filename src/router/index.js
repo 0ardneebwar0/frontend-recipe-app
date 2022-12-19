@@ -7,7 +7,7 @@ Vue.use(VueRouter)
 
 const routes = [
 {
-    path: '/accounts',
+    path: '/recipes',
     name: 'AppAccounts',
     component: AppAccounts
   }
