@@ -4,7 +4,7 @@ import os
 load_dotenv()
 
 class Config(object):
-    SECRET_KEY = 'mgarcia-secret-key'
+    SECRET_KEY = 'radhikari-secret-key'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class ProductionConfig(Config):
